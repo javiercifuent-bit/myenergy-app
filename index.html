@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MY ENERGY"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#06120a"/>
+<title>MY ENERGY</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g0:#06120a;--g1:#0c1f12;--g2:#163320;--g3:#1e5c30;--g4:#217A3A;--g5:#2EA84F;
+  --muted:#5a7a62;--r:14px;
+  --font-h:'Barlow Condensed',sans-serif;
+  --font-b:'Barlow',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font-b);background:var(--g0)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(46,168,79,.1),transparent);}
+
+/* ── HEADER ── */
+.hub-header{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  background:linear-gradient(90deg,var(--g0),var(--g1));
+  border-bottom:2px solid var(--g4);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:58px;box-shadow:0 2px 24px rgba(0,0,0,.5);
+}
+.hub-logo{font-family:var(--font-h);font-weight:900;font-size:22px;letter-spacing:.07em;color:#fff;display:flex;align-items:center;gap:12px}
+.hub-logo-mark{width:34px;height:34px;background:var(--g4);border-radius:8px;display:grid;place-items:center}
+.hub-logo-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round}
+.hub-logo em{color:var(--g5);font-style:normal}
+.hub-subtitle{font-size:11px;color:var(--muted);font-family:var(--font-h);letter-spacing:.12em;text-transform:uppercase}
+
+/* ── HOME ── */
+#view-home{
+  position:fixed;top:58px;left:0;right:0;bottom:0;
+  overflow-y:auto;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;padding:32px 20px 60px;
+}
+#view-home .hub-welcome{
+  margin-top:24px;
+}
+.hub-welcome{text-align:center;margin-bottom:44px}
+.hub-welcome h1{font-family:var(--font-h);font-size:40px;font-weight:900;color:#fff;letter-spacing:.02em;line-height:1}
+.hub-welcome p{font-size:14px;color:var(--muted);margin-top:8px;font-weight:300}
+
+/* ── GRID ── */
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;width:100%;max-width:900px;}
+.app-card{
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  border:1px solid var(--g3);border-radius:var(--r);
+  padding:26px 22px;cursor:pointer;
+  transition:border-color .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.app-card:hover,.app-card:active{border-color:var(--g5);box-shadow:0 12px 40px rgba(33,122,58,.25);}
+.app-card-icon{width:50px;height:50px;border-radius:12px;display:grid;place-items:center;margin-bottom:16px;font-size:22px;}
+.icon-green{background:rgba(46,168,79,.15);border:1px solid rgba(46,168,79,.3)}
+.icon-amber{background:rgba(217,119,6,.15);border:1px solid rgba(217,119,6,.3)}
+.icon-blue{background:rgba(26,111,160,.2);border:1px solid rgba(26,111,160,.4)}
+.app-card h2{font-family:var(--font-h);font-size:19px;font-weight:800;color:#fff;letter-spacing:.04em;margin-bottom:6px;}
+.app-card p{font-size:12px;color:var(--muted);line-height:1.5;font-weight:300}
+.app-card-arrow{
+  position:absolute;bottom:18px;right:18px;
+  width:30px;height:30px;background:rgba(46,168,79,.15);
+  border:1px solid rgba(46,168,79,.3);border-radius:50%;
+  display:grid;place-items:center;transition:all .2s;
+}
+.app-card:hover .app-card-arrow,.app-card:active .app-card-arrow{background:var(--g4);border-color:var(--g4)}
+.app-card-arrow svg{width:13px;height:13px;fill:none;stroke:var(--g5);stroke-width:2.2;stroke-linecap:round}
+.app-card:hover .app-card-arrow svg,.app-card:active .app-card-arrow svg{stroke:#fff}
+
+/* ── SUBMENU BODEGA ── */
+.submenu{display:none;margin-top:14px;border-top:1px solid var(--g3);padding-top:14px;flex-direction:column;gap:8px;}
+.submenu.open{display:flex}
+.submenu-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;
+  background:rgba(255,255,255,.04);border:1px solid var(--g3);
+  cursor:pointer;transition:all .15s;color:#fff;
+  -webkit-tap-highlight-color:transparent;
+}
+.submenu-item:hover,.submenu-item:active{background:rgba(46,168,79,.12);border-color:var(--g5)}
+.sub-icon{font-size:15px;flex-shrink:0}
+.sub-label{font-family:var(--font-h);font-size:13px;font-weight:700;letter-spacing:.04em}
+.sub-desc{font-size:10px;color:var(--muted);font-weight:300}
+.badge-ext{
+  margin-left:auto;font-size:9px;font-family:var(--font-h);font-weight:700;
+  letter-spacing:.06em;padding:2px 6px;border-radius:8px;
+  background:rgba(46,168,79,.15);color:var(--g5);
+  border:1px solid rgba(46,168,79,.3);text-transform:uppercase;flex-shrink:0;
+}
+
+/* ── VISTA APP (iframe) ── */
+#view-app{
+  display:none;position:fixed;
+  top:58px;left:0;right:0;bottom:0;
+  z-index:200;flex-direction:column;
+}
+#view-app.active{display:flex}
+.back-bar{
+  background:linear-gradient(90deg,var(--g0),var(--g1));
+  border-bottom:1px solid var(--g3);
+  padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--font-h);font-size:13px;font-weight:700;
+  letter-spacing:.06em;color:var(--g5);cursor:pointer;
+  background:none;border:none;padding:6px 12px;
+  border-radius:6px;transition:background .15s;text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
+}
+.back-btn:hover,.back-btn:active{background:rgba(46,168,79,.1)}
+.back-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round}
+.back-bar-title{font-family:var(--font-h);font-size:13px;font-weight:700;color:#fff;letter-spacing:.06em;text-transform:uppercase}
+#app-frame{flex:1;border:none;background:#fff;width:100%;display:block;}
+
+@media(max-width:580px){
+  .apps-grid{grid-template-columns:1fr}
+  .hub-welcome h1{font-size:30px}
+}
+</style>
+<script>
+// Pre-inicializar Capacitor plugins en el contexto del parent
+window.addEventListener('load', function(){
+  if(window.Capacitor && window.Capacitor.isNativePlatform()){
+    if(window.Capacitor.Plugins.LocalNotifications){
+      window.Capacitor.Plugins.LocalNotifications.requestPermissions().catch(function(){});
+    }
+  }
+  // Registrar Service Worker para PWA (iPhone)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(function(e){
+      console.log('SW register failed:', e);
+    });
+  }
+});
+</script>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hub-header">
+  <div class="hub-logo">
+    <div class="hub-logo-mark" onclick="goHome()" title="Inicio"
+      style="cursor:pointer;transition:opacity .2s" 
+      onmousedown="this.style.opacity='.7'" 
+      onmouseup="this.style.opacity='1'"
+      ontouchstart="this.style.opacity='.7'"
+      ontouchend="this.style.opacity='1'">
+      <svg viewBox="0 0 20 20"><path d="M10 2L3 8v10h5v-5h4v5h5V8L10 2z"/></svg>
+    </div>
+    MY <em>ENERGY</em>
+  </div>
+  <div class="hub-subtitle">Panel de Aplicaciones</div>
+</header>
+
+<!-- HOME -->
+<div id="view-home">
+  <div class="hub-welcome">
+    <h1>SELECCIONA UNA APLICACI&#211;N</h1>
+    <p>Panel de herramientas MY ENERGY SPA</p>
+  </div>
+
+  <div class="apps-grid">
+
+    <!-- Protocolo -->
+    <div class="app-card" onclick="openApp('protocolo.html','&#9889; Protocolo Interruptores BT/MT')">
+      <div class="app-card-icon icon-green">&#9889;</div>
+      <h2>PROTOCOLO INTERRUPTORES</h2>
+      <p>Inspecci&#243;n y pruebas BT/MT. Generaci&#243;n de informes PDF por equipo.</p>
+      <div class="app-card-arrow">
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </div>
+    </div>
+
+    <!-- Bodega -->
+    <div class="app-card" onclick="toggleBodega(event)">
+      <div class="app-card-icon icon-amber">&#128230;</div>
+      <h2>BODEGA MY ENERGY</h2>
+      <p>Inventario completo y formulario de solicitud de materiales.</p>
+      <div class="app-card-arrow" id="arrow-bodega">
+        <svg viewBox="0 0 16 16"><path d="M8 3v10M4 9l4 4 4-4"/></svg>
+      </div>
+      <div class="submenu" id="submenu-bodega" onclick="event.stopPropagation()">
+        <div class="submenu-item" onclick="openExternal('https://airtable.com/appp8zjuwvjLeNAm8/tbl1Mczh38Kf2fdfS/viw6sOnoml5snOl30?blocks=hide')">
+          <span class="sub-icon">&#128203;</span>
+          <div>
+            <div class="sub-label">INVENTARIO COMPLETO</div>
+            <div class="sub-desc">Ver stock actual en Airtable</div>
+          </div>
+          <span class="badge-ext">Externo</span>
+        </div>
+        <div class="submenu-item" onclick="openExternal('https://airtable.com/appp8zjuwvjLeNAm8/shrTY9yOeOM6aaPjG')">
+          <span class="sub-icon">&#128221;</span>
+          <div>
+            <div class="sub-label">SOLICITUD DE MATERIALES</div>
+            <div class="sub-desc">Formulario de pedido a bodega</div>
+          </div>
+          <span class="badge-ext">Externo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fichas -->
+    <div class="app-card" onclick="openApp('fichas.html','&#128193; Fichas Ingreso / Egreso')">
+      <div class="app-card-icon icon-blue">&#128193;</div>
+      <h2>FICHAS INGRESO / EGRESO</h2>
+      <p>Registro de entrada y salida de equipos en laboratorio. Fichas PDF.</p>
+      <div class="app-card-arrow">
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- VISTA APP -->
+<!-- PANTALLA DE APP BLOQUEADA -->
+<div id="view-bloqueada" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;
+  background:var(--g0);flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
+  <div style="font-size:48px;margin-bottom:24px">🔒</div>
+  <div style="font-family:var(--font-h);font-size:28px;font-weight:900;color:#fff;margin-bottom:16px;letter-spacing:.04em">
+    APP NO DISPONIBLE
+  </div>
+  <div id="msg-bloqueada" style="font-size:14px;color:var(--muted);line-height:1.6;max-width:320px">
+    La aplicación no está disponible en este momento.
+  </div>
+  <div style="margin-top:32px;font-size:11px;color:var(--muted);font-family:var(--font-h);letter-spacing:.08em;text-transform:uppercase">
+    MY ENERGY SPA
+  </div>
+</div>
+
+<div id="view-app">
+  <div class="back-bar">
+    <button class="back-btn" onclick="goHome()">
+      <svg viewBox="0 0 16 16"><path d="M13 8H3M7 12l-4-4 4-4"/></svg>
+      Volver
+    </button>
+    <span class="back-bar-title" id="app-title"></span>
+  </div>
+  <iframe id="app-frame"
+    sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-modals allow-popups"
+  ></iframe>
+</div>
+
+<script>
+var bodegaOpen = false;
+
+// ══════════════════════════════════════════════════════════════
+// CONTROL REMOTO — verifica si la app está activa al iniciar
+// Edita el archivo config.json en GitHub para habilitar/deshabilitar
+// ══════════════════════════════════════════════════════════════
+var CONFIG_URL = 'https://raw.githubusercontent.com/javiercifuent-bit/myenergy-config/refs/heads/main/config.json';
+
+async function verificarEstadoApp() {
+  var STORAGE_KEY = 'myenergy_activo';
+  var STORAGE_MSG  = 'myenergy_msg';
+
+  function bloquear(msg) {
+    document.getElementById('view-home').style.display = 'none';
+    document.getElementById('view-bloqueada').style.display = 'flex';
+    document.getElementById('msg-bloqueada').textContent = msg || 'La aplicación no está disponible en este momento.';
+  }
+
+  try {
+    var res = await fetch(CONFIG_URL + '?t=' + Date.now());
+    if (res.ok) {
+      var config = await res.json();
+      // Guardar último estado conocido
+      localStorage.setItem(STORAGE_KEY, config.activo ? '1' : '0');
+      localStorage.setItem(STORAGE_MSG, config.mensaje || '');
+      if (!config.activo) {
+        bloquear(config.mensaje);
+      }
+    } else {
+      // Sin respuesta del servidor: usar último estado guardado
+      var ultimo = localStorage.getItem(STORAGE_KEY);
+      if (ultimo === '0') {
+        bloquear(localStorage.getItem(STORAGE_MSG));
+      }
+    }
+  } catch(e) {
+    // Sin internet: usar último estado guardado
+    var ultimo = localStorage.getItem(STORAGE_KEY);
+    if (ultimo === '0') {
+      bloquear(localStorage.getItem(STORAGE_MSG));
+    }
+    console.log('Config check failed:', e.message);
+  }
+}
+
+// Ejecutar verificación al cargar
+window.addEventListener('load', function() {
+  verificarEstadoApp();
+});
+
+function openApp(file, title) {
+  document.getElementById('app-title').innerHTML = title;
+  document.getElementById('app-frame').src = file;
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-app').classList.add('active');
+}
+
+function goHome() {
+  document.getElementById('view-app').classList.remove('active');
+  document.getElementById('view-home').style.display = 'flex';
+  document.getElementById('app-frame').src = 'about:blank';
+}
+
+function toggleBodega(e) {
+  e.stopPropagation();
+  bodegaOpen = !bodegaOpen;
+  document.getElementById('submenu-bodega').classList.toggle('open', bodegaOpen);
+}
+
+function openExternal(url) {
+  // En iOS PWA window.open a veces se bloquea, usar location como fallback
+  try {
+    var w = window.open(url, '_blank');
+    if(!w || w.closed) window.location.href = url;
+  } catch(e) {
+    window.location.href = url;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// RECEPTOR DE MENSAJES DESDE IFRAME (protocolo, fichas)
+// Ejecuta Capacitor plugins en el contexto del parent
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('message', async function(event) {
+  var data = event.data;
+  if(!data || !data.type) return;
+  if(data.type !== 'SAVE_PDFS' && data.type !== 'SAVE_AND_SHARE') return;
+
+  var files = data.files || [];
+  var title = data.title || 'Informes MY ENERGY';
+  var isSaveOnly = data.type === 'SAVE_PDFS';
+
+  // Android nativo: usar PdfSaver plugin
+  if(window.Capacitor && window.Capacitor.isNativePlatform()){
+    var Cap = window.Capacitor;
+    var uris = [];
+    for(var i=0; i<files.length; i++){
+      var f = files[i];
+      try {
+        var result = await Cap.Plugins.PdfSaver.saveToDownloads({
+          filename: f.name,
+          data: f.b64
+        });
+        if(result && result.uri) uris.push(result.uri);
+      } catch(e){
+        console.log('PdfSaver error:', f.name, e.message);
+      }
+    }
+    if(uris.length === 0) return;
+    if(!isSaveOnly){
+      try {
+        await Cap.Plugins.Share.share({
+          title: title, text: title, files: uris,
+          dialogTitle: 'Compartir informes MY ENERGY'
+        });
+      } catch(e){}
+    }
+    return;
+  }
+
+  // iPhone / Browser: descargar PDFs directamente desde el hub
+  for(var i=0; i<files.length; i++){
+    var f = files[i];
+    try {
+      var byteChars = atob(f.b64);
+      var byteArr = new Uint8Array(byteChars.length);
+      for(var j=0; j<byteChars.length; j++) byteArr[j] = byteChars.charCodeAt(j);
+      var blob = new Blob([byteArr], {type:'application/pdf'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = f.name;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(u,el){ URL.revokeObjectURL(u); document.body.removeChild(el); }, 2000, url, a);
+    } catch(e){
+      // Fallback Safari iOS
+      window.open('data:application/pdf;base64,'+f.b64, '_blank');
+    }
+  }
+});
+</script>
+</body>
+</html>
