@@ -809,23 +809,26 @@ function savePDFNative(doc, filename){
   if(!window._pdfBuffer) window._pdfBuffer = [];
   const b64 = doc.output('datauristring').split(',')[1];
   window._pdfBuffer.push({name: filename, b64: b64});
-  if(!isCapacitorApp()){
-    // Browser (iPhone Safari, Chrome): descarga directa
-    try {
-      const blob = doc.output('blob');
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); document.body.removeChild(a); }, 2000);
-    } catch(e){
-      // Fallback Safari iOS
-      const dataUri = doc.output('datauristring');
-      window.open(dataUri, '_blank');
-    }
-  }
   return filename;
+}
+
+// Descarga directa para browser (iPhone Safari)
+function descargarEnBrowser(b64, filename){
+  try {
+    const byteChars = atob(b64);
+    const byteArr = new Uint8Array(byteChars.length);
+    for(let i=0;i<byteChars.length;i++) byteArr[i] = byteChars.charCodeAt(i);
+    const blob = new Blob([byteArr], {type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); if(a.parentNode) a.parentNode.removeChild(a); }, 3000);
+  } catch(e){
+    // Fallback Safari iOS
+    window.open('data:application/pdf;base64,'+b64, '_blank');
+  }
 }
 function notifyFichaDownload(filename){
   // La notificación la maneja el parent via PdfSaver Java plugin
@@ -1362,7 +1365,12 @@ async function generarYEnviar(type) {
         title: 'MY ENERGY — ' + filename
       }, '*');
     } else if(!isCapacitorApp()){
-      showToast('✅ PDF generado — revisa tus descargas', 'success');
+      // Browser (iPhone): descargar el PDF directamente
+      if(window._pdfBuffer && window._pdfBuffer.length > 0){
+        const f = window._pdfBuffer[0];
+        descargarEnBrowser(f.b64, f.name);
+        showToast('✅ PDF listo — guárdalo desde Safari', 'success');
+      }
     }
   } catch(e) {
     showToast('Error: ' + e.message, 'error');
